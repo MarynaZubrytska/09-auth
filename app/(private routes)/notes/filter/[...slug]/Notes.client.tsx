@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/clientApi";
 import Link from "next/link";
 
 import SearchBox from "@/components/SearchBox/SearchBox";
@@ -24,7 +24,6 @@ interface NotesClientProps {
 export default function NotesClient({ initialTag }: NotesClientProps) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
-
   const [debouncedQuery] = useDebounce(query.trim(), 400);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
       fetchNotes({
         page,
         perPage: PER_PAGE,
-        search: debouncedQuery,
+        search: debouncedQuery || undefined,
         tag: initialTag || undefined,
       }),
     placeholderData: keepPreviousData,
@@ -59,7 +58,11 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
           />
         )}
 
-        <Link href="/notes/action/create" className={css.button}>
+        <Link
+          href="/notes/action/create"
+          className={css.button}
+          aria-haspopup="dialog"
+        >
           Create note +
         </Link>
       </header>
@@ -72,7 +75,9 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
         </div>
 
         {isError && <ErrorMessage message="Failed to load notes" />}
+
         {!isFetching && isSuccess && notes.length === 0 && <EmptyState />}
+
         {notes.length > 0 && <NoteList notes={notes} />}
       </section>
     </div>

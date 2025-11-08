@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
+import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 import { Roboto } from "next/font/google";
@@ -12,7 +13,7 @@ const roboto = Roboto({
   display: "swap",
 });
 
-const siteUrl = "https://08-zustand-theta-lake.vercel.app/";
+const siteUrl = "09-auth-theta-puce.vercel.app";
 
 export const metadata: Metadata = {
   title: "NoteHub",
@@ -45,10 +46,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={roboto.variable}>
         <TanStackProvider>
-          <Header />
-          {modal}
-          {children}
-          <Footer />
+          <AuthProvider>
+            <Header />
+            {modal}
+            {children}
+            <Footer />
+          </AuthProvider>
         </TanStackProvider>
       </body>
     </html>

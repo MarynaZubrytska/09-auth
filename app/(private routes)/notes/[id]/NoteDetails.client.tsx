@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNoteById } from "@/lib/api/clientApi";
 import Modal from "@/components/Modal/Modal";
-import css from "./NotePreview.client.module.css";
+import css from "./NoteDetails.module.css";
 
 interface NotePreviewProps {
   id: string;
@@ -22,7 +22,6 @@ export default function NotePreview({ id }: NotePreviewProps) {
     queryFn: () => fetchNoteById(id),
     enabled: !!id,
     refetchOnMount: false,
-    refetchOnWindowFocus: false,
     staleTime: 60_000,
   });
 
@@ -31,8 +30,7 @@ export default function NotePreview({ id }: NotePreviewProps) {
   return (
     <Modal onClose={handleClose}>
       {isLoading && <p>Loading, please wait...</p>}
-      {(isError || (!note && !isLoading)) && <p>Something went wrong.</p>}
-
+      {(isError || !note) && !isLoading && <p>Something went wrong.</p>}
       {note && (
         <div className={css.container}>
           <div className={css.item}>
@@ -40,12 +38,10 @@ export default function NotePreview({ id }: NotePreviewProps) {
               <h2>{note.title}</h2>
               <span className={css.tag}>{note.tag}</span>
             </div>
-
             <p className={css.content}>{note.content}</p>
             <p className={css.date}>
               {new Date(note.createdAt).toLocaleString()}
             </p>
-
             <button type="button" className={css.backBtn} onClick={handleClose}>
               ← Back
             </button>

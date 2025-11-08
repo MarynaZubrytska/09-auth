@@ -1,10 +1,8 @@
 import { withDehydratedState } from "@/lib/prefetch";
 import { fetchNoteById } from "@/lib/api/serverApi";
-import NotePreview from "./NotePreview.client";
+import NotePreview from "./NoteDetails.client";
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-};
+type PageProps = { params: Promise<{ id: string }> };
 
 export default async function InterceptedNoteModal({ params }: PageProps) {
   const { id } = await params;

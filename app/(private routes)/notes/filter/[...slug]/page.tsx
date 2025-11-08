@@ -1,28 +1,22 @@
-import type { Metadata } from "next";
 import { withDehydratedState } from "@/lib/prefetch";
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/serverApi";
 import NotesClient from "./Notes.client";
 
-const PER_PAGE = 12;
-
-type PageProps = {
-  params: Promise<{ slug?: string[] }>;
-};
+type PageProps = { params: Promise<{ slug?: string[] }> };
 
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug?: string[] }>;
-}): Promise<Metadata> {
+}) {
   const { slug } = await params;
   const raw = slug?.[0];
   const tag = !raw || raw === "all" ? "All" : raw;
-
-  const url = `https://08-zustand-theta-lake.vercel.app/notes/filter/${raw ?? "all"}`;
+  const url = `09-auth-theta-puce.vercel.app/notes/filter/${raw ?? "all"}`;
   const title = `Notes - ${tag} | NoteHub`;
   const description = `Browse your notes filtered by tag: ${tag}.`;
 
-  return {
+  return Promise.resolve({
     title,
     description,
     openGraph: {
@@ -38,7 +32,7 @@ export async function generateMetadata({
         },
       ],
     },
-  };
+  });
 }
 
 export default async function FilteredNotesPage({ params }: PageProps) {
@@ -49,13 +43,13 @@ export default async function FilteredNotesPage({ params }: PageProps) {
   const element = await withDehydratedState(
     async (qc) => {
       await qc.prefetchQuery({
-        queryKey: ["notes", tag, 1, PER_PAGE, ""],
+        queryKey: ["notes", tag, 1, 12, ""],
         queryFn: () =>
           fetchNotes({
-            page: 1,
-            perPage: PER_PAGE,
+            page: 0,
+            perPage: 12,
             search: "",
-            tag: tag ? tag : undefined,
+            tag: tag || undefined,
           }),
       });
     },

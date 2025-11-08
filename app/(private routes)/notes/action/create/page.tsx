@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import css from "./CreateNote.module.css";
 import NoteForm from "@/components/NoteForm/NoteForm";
 
-const url = "https://08-zustand-theta-lake.vercel.app/";
+const url = "09-auth-theta-puce.vercel.app";
 
 export const metadata: Metadata = {
   title: "Create note | NoteHub",

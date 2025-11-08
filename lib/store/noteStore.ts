@@ -1,27 +1,22 @@
-"use client";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import type { NoteTag } from "@/types/note";
 
-type Draft = { title: string; content: string; tag: NoteTag };
-const initialDraft: Draft = { title: "", content: "", tag: "Todo" };
+const initialDraft = { title: "", content: "", tag: "Todo" as NoteTag };
 
-type NoteStore = {
-  draft: Draft;
-  setDraft: (patch: Partial<Draft>) => void;
+type NoteDraftState = {
+  draft: typeof initialDraft;
+  setDraft: (patch: Partial<typeof initialDraft>) => void;
   clearDraft: () => void;
 };
 
-export const useNoteStore = create<NoteStore>()(
+export const useNoteStore = create<NoteDraftState>()(
   persist(
     (set, get) => ({
       draft: initialDraft,
       setDraft: (patch) => set({ draft: { ...get().draft, ...patch } }),
       clearDraft: () => set({ draft: initialDraft }),
     }),
-    {
-      name: "notehub-draft",
-      storage: createJSONStorage(() => localStorage),
-    }
+    { name: "notehub-draft" }
   )
 );

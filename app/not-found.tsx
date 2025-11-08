@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import css from "./page.module.css";
 
-const siteUrl = "https://08-zustand-theta-lake.vercel.app/404";
+const siteUrl = "09-auth-theta-puce.vercel.app/404";
 
 export const metadata: Metadata = {
   title: "404 - Page not found | NoteHub",

@@ -7,14 +7,13 @@
   color: white;
 }
 
-.header a {
+.logo {
   text-decoration: none;
   color: white;
   font-size: 1.5rem;
   font-weight: bold;
 }
-
-.header a:hover {
+.logo:hover {
   color: #ddd;
 }
 
@@ -24,12 +23,19 @@
   padding: 0;
   display: flex;
   gap: 1rem;
+  align-items: center;
+}
+
+.navigation li {
+  display: flex;
+  align-items: center;
 }
 
 .navigation li a {
   text-decoration: none;
   color: white;
   font-size: 1rem;
+  font-weight: 500;
 }
 
 .navigation li a:hover {
