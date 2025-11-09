@@ -4,8 +4,8 @@ import { api } from "./api";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
 
-function authHeaders() {
-  const c = cookies();
+async function authHeaders(): Promise<{ cookie: string }> {
+  const c = await cookies();
   return { cookie: c.toString() };
 }
 
@@ -26,14 +26,14 @@ export async function fetchNotes(
 ): Promise<NotesListResponse> {
   const res = await api.get<NotesListResponse>("/notes", {
     params,
-    headers: authHeaders(),
+    headers: await authHeaders(),
   });
   return res.data;
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
   const res = await api.get<Note>(`/notes/${id}`, {
-    headers: authHeaders(),
+    headers: await authHeaders(),
   });
   return res.data;
 }
@@ -42,14 +42,14 @@ export async function checkServerSession(): Promise<
   AxiosResponse<User | undefined>
 > {
   const res = await api.get<User | undefined>("/auth/session", {
-    headers: authHeaders(),
+    headers: await authHeaders(),
   });
   return res;
 }
 
 export async function getMe(): Promise<User> {
   const res = await api.get<User>("/users/me", {
-    headers: authHeaders(),
+    headers: await authHeaders(),
   });
   return res.data;
 }
