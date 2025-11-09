@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import css from "./EditProfilePage.module.css";
 import { getMe, updateMe } from "@/lib/api/clientApi";
 import type { User } from "@/types/user";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { setUser } = useAuthStore();
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setLocalUser] = useState<User | null>(null);
   const [username, setUsername] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [saving, setSaving] = useState<boolean>(false);
@@ -22,7 +24,7 @@ export default function EditProfilePage() {
       try {
         const me = await getMe();
         if (!mounted) return;
-        setUser(me);
+        setLocalUser(me);
         setUsername(me.username);
       } catch {
         setError("Failed to load profile");
@@ -38,10 +40,12 @@ export default function EditProfilePage() {
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!username.trim()) return;
+
     setSaving(true);
     setError(null);
     try {
-      await updateMe({ username });
+      const updated = await updateMe({ username });
+      setUser(updated);
       router.push("/profile");
     } catch {
       setError("Failed to update profile");

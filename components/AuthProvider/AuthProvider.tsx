@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { checkSession } from "@/lib/api/clientApi";
+import { checkSession, getMe } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 
 const PRIVATE_PREFIXES = ["/profile", "/notes"];
@@ -23,39 +23,48 @@ export default function AuthProvider({
     let cancelled = false;
 
     async function guard() {
-      setLoading(true);
-      try {
-        const isPrivate = PRIVATE_PREFIXES.some((p) => pathname.startsWith(p));
-        const isPublic = PUBLIC_PAGES.includes(pathname);
+      const isPrivate = PRIVATE_PREFIXES.some((p) => pathname.startsWith(p));
+      const isPublic = PUBLIC_PAGES.includes(pathname);
 
-        if (isAuthenticated && isPublic) {
-          router.replace("/profile");
-          return;
-        }
+      if (isAuthenticated && isPublic) {
+        router.replace("/profile");
+        return;
+      }
 
-        if (!isAuthenticated && isPrivate) {
-          const user = await checkSession();
+      if (isPrivate && !isAuthenticated) {
+        setLoading(true);
+        try {
+          const sessionUser = await checkSession();
           if (cancelled) return;
 
-          if (user) {
-            setUser(user);
+          if (sessionUser) {
+            const profile = await getMe();
+            if (cancelled) return;
+            setUser(profile);
           } else {
             clearIsAuthenticated();
             router.replace("/sign-in");
             return;
           }
+        } finally {
+          if (!cancelled) setLoading(false);
         }
-      } finally {
-        if (!cancelled) setLoading(false);
       }
     }
 
-    guard();
+    void guard();
     return () => {
       cancelled = true;
     };
   }, [pathname, isAuthenticated, router, setUser, clearIsAuthenticated]);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div aria-busy="true" aria-live="polite" style={{ padding: 24 }}>
+        Checking session…
+      </div>
+    );
+  }
+
   return <>{children}</>;
 }

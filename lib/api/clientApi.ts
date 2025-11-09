@@ -24,7 +24,9 @@ export async function fetchNotes(
 
   const { data } = await api.get<{ notes: Note[]; totalPages: number }>(
     "/notes",
-    { params }
+    {
+      params,
+    }
   );
 
   return {
@@ -35,52 +37,56 @@ export async function fetchNotes(
   };
 }
 
-export async function fetchNoteById(id: string) {
+export async function fetchNoteById(id: string): Promise<Note> {
   const { data } = await api.get<Note>(`/notes/${id}`);
   return data;
 }
 
-export async function createNote(payload: {
+export type CreateNotePayload = {
   title: string;
   content: string;
   tag: NoteTag;
-}) {
+};
+
+export async function createNote(payload: CreateNotePayload): Promise<Note> {
   const { data } = await api.post<Note>("/notes", payload);
   return data;
 }
 
-export async function deleteNote(id: string) {
+export async function deleteNote(id: string): Promise<Note> {
   const { data } = await api.delete<Note>(`/notes/${id}`);
   return data;
 }
 
-type AuthPayload = { email: string; password: string };
+export type AuthPayload = { email: string; password: string };
 
-export async function register(payload: AuthPayload) {
+export async function register(payload: AuthPayload): Promise<User> {
   const { data } = await api.post<User>("/auth/register", payload);
   return data;
 }
 
-export async function login(payload: AuthPayload) {
+export async function login(payload: AuthPayload): Promise<User> {
   const { data } = await api.post<User>("/auth/login", payload);
   return data;
 }
 
-export async function logout() {
+export async function logout(): Promise<void> {
   await api.post("/auth/logout");
 }
 
-export async function checkSession() {
+export async function checkSession(): Promise<User | undefined> {
   const { data } = await api.get<User | undefined>("/auth/session");
   return data;
 }
 
-export async function getMe() {
+export async function getMe(): Promise<User> {
   const { data } = await api.get<User>("/users/me");
   return data;
 }
 
-export async function updateMe(payload: Partial<User>) {
+export type UpdateMePayload = { username: string };
+
+export async function updateMe(payload: UpdateMePayload): Promise<User> {
   const { data } = await api.patch<User>("/users/me", payload);
   return data;
 }
